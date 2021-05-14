@@ -37,7 +37,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5/dat.gui.min.js"></script>
 
   <div id="tlopodprzycisk">
-  <button id="przycisk" onclick="myFunction()">ROZPOCZNIJ PRZYGODĘ</button>
+  <button id="przycisk" onclick="showPage()">ROZPOCZNIJ PRZYGODĘ</button>
   <button id="przycisk2" onclick="myFunction2()">KOMPATYBILNOŚĆ</button>
   <button id="przyciskpowrot" onclick="myFunction3()">POWRÓT</button>
 
@@ -101,12 +101,14 @@
 
   <script>
   var myVar;
+var tl = new TimelineMax({paused: true});
+var tl2 = new TimelineMax({paused: true});
 
-  function myFunction() {
-    myVar = setTimeout(showPage, 3000);
-    document.getElementById("tlopodprzycisk").style.display = "none";
-    document.getElementById("loader").style.display = "block";
-}
+  //function myFunction() {
+   //myVar = setTimeout(showPage, 3000);
+    //document.getElementById("tlopodprzycisk").style.display = "none";
+    //document.getElementById("loader").style.display = "block";
+//}
 
 function myFunction2() {
     document.getElementById("kompatybilnosc").style.display = "block";
@@ -126,15 +128,20 @@ function myFunction3() {
 
   function showPage() {
 
-const manager = new THREE.LoadingManager( () => {
-	
-		const loadingScreen = document.getElementById( 'loader' );
-		loadingScreen.style.display = "none";
-		
-		// optional: remove loader from DOM via event listener
-		loadingScreen.addEventListener( 'transitionend', onTransitionEnd );
-		
+document.getElementById("tlopodprzycisk").style.display = "none";
+    document.getElementById("loader").style.display = "block";
+
+	const manager = new THREE.LoadingManager( () => {
+	document.getElementById("loader").style.display = "none";
+	tl.play();
+        tl2.play();
+        setTimeout(function(){
+      document.getElementById("dialog1").play();
+      console.log('your audio is started just now');    
+      document.getElementById("napisdialog1").style.display = "block";
+    }, 7000)	
 	} );
+
 
     var scene = new THREE.Scene( );
     var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 )
@@ -159,11 +166,11 @@ renderer.physicallyCorrectLights = false;
     controls = new THREE.OrbitControls( camera, renderer.domElement );
     controls.target = new THREE.Vector3(0, 0, 0);
 
-    var mtlLoader = new THREE.MTLLoader( manager );
+    var mtlLoader = new THREE.MTLLoader(manager);
     mtlLoader.load( '3dmodels/pokoj.mtl', function( materials ) {
 
     materials.preload();
-    var objLoader = new THREE.OBJLoader( manager );
+    var objLoader = new THREE.OBJLoader(manager);
     objLoader.setMaterials( materials );
     objLoader.load
     (
@@ -177,7 +184,7 @@ renderer.physicallyCorrectLights = false;
 
     // load fbx model and texture                                               
     const objs = [];
-    const loader = new THREE.FBXLoader();
+    const loader = new THREE.FBXLoader(manager);
     loader.load("eliza/eliza18350905.fbx", model => {
         // model is a THREE.Group (THREE.Object3D)                              
         const mixer = new THREE.AnimationMixer(model);
@@ -186,14 +193,13 @@ renderer.physicallyCorrectLights = false;
         scene.add(model);
         model.scale.set(2, 2, 2);
         model.rotation.y = Math.PI/2;
-        const tl = new TimelineMax();
-        tl.set(model.position, {x: 10, y: 0.03, z: 2.70});
-        tl.to(model.position, 6, {x: -3.42, y: 0.03, z: 1.08}, "+=10");
-        tl.to(model.position, 0, {x: -4.10, y: 0.03, z: -0.8}, "-=1");
-        tl.to(model.position, 0, {x: 5.24, y: 0.03, z: -3.56}, "+=4");
-        tl.to(model.position, 0, {x: -4.10, y: 0.03, z: -0.8}, "+=4");
-        tl.to(model.position, 0, {x: 10, y: 0.03, z: 2.70}, "+=4");
-        tl.to(model.position, 0, {x: -2.64, y: 0.03, z: 2.70}, "+=6"); 
+        model.position.set(10, 0.03, 2.70);
+        tl2.to(model.position, 6, {x: -3.42, y: 0.03, z: 1.08}, "+=10");
+        tl2.to(model.position, 0, {x: -4.10, y: 0.03, z: -0.8}, "-=1");
+        tl2.to(model.position, 0, {x: 5.24, y: 0.03, z: -3.56}, "+=4");
+        tl2.to(model.position, 0, {x: -4.10, y: 0.03, z: -0.8}, "+=4");
+        tl2.to(model.position, 0, {x: 10, y: 0.03, z: 2.70}, "+=4");
+        tl2.to(model.position, 0, {x: -2.64, y: 0.03, z: 2.70}, "+=6"); 
         objs.push({model, mixer});
     });
 
@@ -247,7 +253,6 @@ controls.target.y = 0;
 controls.target.z = 0;
 
 // tween
-const tl = new TimelineMax();
 tl.to(camera.position, 7, {x: -4.964434946326108, y: 5.000690467689933, z: -0.4063625729616378});
 tl.set(camera.position, {x: 3.4955177003341333, y: 4.173755499196321, z: 4.126892038540991});
 tl.set(controls.target, {x: 7.905795506574759, y: 2.3402582077807943, z: 1.6945892504265487});
@@ -303,11 +308,11 @@ tl.set(controls.target, {x: -2.3354890963104626, y: 3.152165599981446, z: 3.2831
 
 //dialogues
 
-setTimeout(function(){
-      document.getElementById("dialog1").play();
-      console.log('your audio is started just now');    
-      document.getElementById("napisdialog1").style.display = "block";
-    }, 9000)
+//setTimeout(function(){
+      //document.getElementById("dialog1").play();
+      //console.log('your audio is started just now');    
+      //document.getElementById("napisdialog1").style.display = "block";
+    //}, 8000)
      
 var audio = document.querySelector('#dialog1');
 
